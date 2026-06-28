@@ -13,6 +13,8 @@ manager@chargesmart.test / manager123, tech@chargesmart.test / tech123.
 
 from __future__ import annotations
 
+import os
+
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -42,9 +44,14 @@ app = FastAPI(
     description="Smart EV charging management for residential buildings (M4).",
 )
 
+# Allowed browser origins. Defaults to the local dev server; in production set
+# CHARGESMART_CORS_ORIGINS to the deployed frontend URL(s), comma-separated.
+_DEFAULT_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173"
+_cors_origins = [o.strip() for o in os.environ.get("CHARGESMART_CORS_ORIGINS", _DEFAULT_ORIGINS).split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=_cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
