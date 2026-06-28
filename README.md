@@ -3,6 +3,14 @@
 Smart EV charging management for residential buildings — a software-only scheduling
 layer that prevents electrical overload while guaranteeing charging deadlines.
 
+## 🌐 Live demo
+
+- **App:** https://charge-smart-psi.vercel.app  (log in as `manager@chargesmart.test` / `manager123`)
+- **API:** https://chargesmart-api.onrender.com/docs
+
+Hosted on Vercel (frontend) + Render (backend) + Supabase (PostgreSQL). The Render free
+tier sleeps after ~15 min idle, so the first load may take ~50 s to wake.
+
 Authoritative spec: `ChargeSmart_Project_Book_v5_EN.docx`. Development plan and decisions:
 [PLAN.md](PLAN.md). Dataset choice: [docs/DATASET.md](docs/DATASET.md).
 
