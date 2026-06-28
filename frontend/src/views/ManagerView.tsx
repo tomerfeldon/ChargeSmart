@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "../api/client";
+import { AnalysisPanel } from "../components/AnalysisPanel";
 import { LoadChart } from "../components/LoadChart";
 import { PowerGauge } from "../components/PowerGauge";
 import { SessionTable } from "../components/SessionTable";
@@ -75,10 +76,12 @@ export function ManagerView() {
           </div>
         )}
 
-        <div className="panel rise" style={{ padding: 24, animationDelay: "0.14s" }}>
+        <div className="panel rise" style={{ padding: 24, marginBottom: 16, animationDelay: "0.14s" }}>
           <p className="eyebrow" style={{ marginBottom: 16 }}>Charging sessions</p>
           <SessionTable sessions={schedule?.sessions ?? []} />
         </div>
+
+        <AnalysisPanel />
       </div>
     </>
   );

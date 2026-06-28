@@ -21,6 +21,7 @@ from .deps import get_current_user, repo_dependency, require_role
 from .db import Repository
 from .entities import User, UserRole
 from .schemas import (
+    AnalysisResponse,
     AssistantQuery,
     AssistantResponse,
     BuildingLimitUpdate,
@@ -103,6 +104,16 @@ def set_building_limit(
     repo: Repository = Depends(repo_dependency),
 ) -> BuildingRead:
     return service.set_building_limit(repo, user.building_id, payload.max_building_power_kw)
+
+
+# --- Analysis report (Book §5.4) — any authenticated user ------------------- #
+@app.get("/analysis", response_model=AnalysisResponse, tags=["analysis"])
+def get_analysis(
+    user: User = Depends(get_current_user),
+    repo: Repository = Depends(repo_dependency),
+) -> AnalysisResponse:
+    """Trace-driven evaluation: Table 15 statistics + managed-vs-uncontrolled curves."""
+    return service.build_analysis(repo, user.building_id)
 
 
 # --- Diagnostics (UC-5) — technician or manager ----------------------------- #

@@ -62,3 +62,26 @@ export interface SessionCreate {
   target_soc: number;
   departure_time: string;
 }
+
+export interface AnalysisStats {
+  vehicle_count: number;
+  mean_building_load_kw: number;
+  peak_load_kw: number;
+  peak_utilization: number;
+  on_time_completion_rate: number;
+  mean_waiting_minutes: number;
+  std_waiting_minutes: number;
+}
+
+export interface AnalysisPoint {
+  t: string;
+  managed: number;
+  unmanaged: number;
+}
+
+export interface AnalysisResponse {
+  building_limit_kw: number;
+  unmanaged_peak_kw: number;
+  stats: AnalysisStats;
+  series: AnalysisPoint[];
+}

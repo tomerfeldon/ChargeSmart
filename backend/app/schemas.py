@@ -25,6 +25,7 @@ __all__ = [
     "SessionCreate", "SessionUpdate", "ScheduleResponse", "BuildingLimitUpdate",
     "DiagnosticsResponse", "AssistantQuery", "AssistantResponse",
     "LoginRequest", "TokenResponse",
+    "AnalysisStats", "AnalysisPoint", "AnalysisResponse",
 ]
 
 
@@ -165,3 +166,29 @@ class AssistantQuery(BaseModel):
 class AssistantResponse(BaseModel):
     answer: str
     # The assistant is read-only; it never returns commands that mutate the schedule.
+
+
+# --------------------------------------------------------------------------- #
+# GET /analysis  — trace-driven evaluation report (Book §5.4, Table 15)
+# --------------------------------------------------------------------------- #
+class AnalysisStats(BaseModel):
+    vehicle_count: int
+    mean_building_load_kw: float
+    peak_load_kw: float
+    peak_utilization: float          # 0..1
+    on_time_completion_rate: float   # 0..1
+    mean_waiting_minutes: float
+    std_waiting_minutes: float
+
+
+class AnalysisPoint(BaseModel):
+    t: str                # HH:MM label
+    managed: float        # base + EV charging under the scheduler (kW)
+    unmanaged: float      # uncontrolled: every vehicle charges at full rate (kW)
+
+
+class AnalysisResponse(BaseModel):
+    building_limit_kw: float
+    unmanaged_peak_kw: float
+    stats: AnalysisStats
+    series: list[AnalysisPoint]

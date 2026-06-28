@@ -9,10 +9,13 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-from . import simulation
-from .db import Repository
+from . import analysis, dataset, simulation
+from .db import InMemoryRepository, Repository
 from .entities import ChargingSession, EventType
 from .schemas import (
+    AnalysisPoint,
+    AnalysisResponse,
+    AnalysisStats,
     BuildingRead,
     ChargerRead,
     DiagnosticsResponse,
@@ -22,6 +25,14 @@ from .schemas import (
     SessionRead,
     SessionUpdate,
 )
+
+# The fixed evaluation scenario (Book §5.3, §5.4): a 30-vehicle overnight benchmark at a
+# realistically-sized ceiling, reproducible (seeded, not wall-clock). This mirrors the
+# Book's feasible Table 15 run, independent of the live (manager-configurable) limit.
+_ANALYSIS_START = datetime(2025, 1, 15, 20, 0, 0, tzinfo=timezone.utc)
+_ANALYSIS_VEHICLES = 30
+_ANALYSIS_SEED = 42
+_ANALYSIS_LIMIT_KW = 80.0
 
 
 def _now() -> datetime:
@@ -108,6 +119,56 @@ def set_building_limit(repo: Repository, building_id: int, max_building_power_kw
         building_id=building.building_id,
         address=building.address,
         max_building_power_kw=building.max_building_power_kw,
+    )
+
+
+def build_analysis(repo: Repository, building_id: int) -> AnalysisResponse:
+    """Trace-driven evaluation report (Book §5.4, Table 15).
+
+    Runs the deterministic overnight benchmark over the synthetic dataset in a throwaway
+    in-memory repo (so it never touches the live store) at a fixed, realistically-sized
+    ceiling. Returns the Table 15 statistics and the managed-vs-uncontrolled load curves.
+    """
+    limit_kw = _ANALYSIS_LIMIT_KW
+
+    sessions = dataset.generate_sessions(count=_ANALYSIS_VEHICLES, seed=_ANALYSIS_SEED)
+    base_load = dataset.generate_base_load(horizon_min=14 * 60, step_min=5, seed=_ANALYSIS_SEED)
+
+    sandbox = InMemoryRepository()
+    sandbox.seed_building(1, "analysis", max_building_power_kw=limit_kw)
+    for r in sessions:
+        sandbox.seed_charger(r.charger_id, 1, max_power_output_kw=r.max_charge_rate_kw)
+    dataset.load_base_load(sandbox, 1, base_load, _ANALYSIS_START)
+    arrivals = dataset.to_arrivals(sessions, _ANALYSIS_START)
+
+    end = _ANALYSIS_START + timedelta(minutes=max(r.departure_offset_min for r in sessions) + 5)
+    result = simulation.run_simulation(sandbox, 1, _ANALYSIS_START, end, step_minutes=5.0, arrivals=arrivals)
+    stats = analysis.summarize(result)
+    unmanaged = analysis.unmanaged_load_series(sandbox, 1, arrivals, _ANALYSIS_START, end, step_minutes=5.0)
+
+    # Align the two curves on the shared 5-minute grid.
+    series = [
+        AnalysisPoint(
+            t=snap.timestamp.strftime("%H:%M"),
+            managed=round(snap.base_load_kw + snap.total_assigned_kw, 2),
+            unmanaged=round(unmanaged[i][1], 2),
+        )
+        for i, snap in enumerate(result.snapshots)
+    ]
+
+    return AnalysisResponse(
+        building_limit_kw=limit_kw,
+        unmanaged_peak_kw=max(load for _, load in unmanaged),
+        stats=AnalysisStats(
+            vehicle_count=stats.vehicle_count,
+            mean_building_load_kw=round(stats.mean_building_load_kw, 2),
+            peak_load_kw=round(stats.peak_load_kw, 2),
+            peak_utilization=round(stats.peak_utilization, 4),
+            on_time_completion_rate=round(stats.on_time_completion_rate, 4),
+            mean_waiting_minutes=round(stats.mean_waiting_minutes, 1),
+            std_waiting_minutes=round(stats.std_waiting_minutes, 1),
+        ),
+        series=series,
     )
 
 

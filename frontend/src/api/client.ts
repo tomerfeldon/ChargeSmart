@@ -2,6 +2,7 @@
 // Mirrors the client-server interaction of Book §3.7.1.
 
 import type {
+  AnalysisResponse,
   DiagnosticsResponse,
   ScheduleResponse,
   SessionCreate,
@@ -70,6 +71,8 @@ export const api = {
     }),
 
   getDiagnostics: () => request<DiagnosticsResponse>("/diagnostics"),
+
+  getAnalysis: () => request<AnalysisResponse>("/analysis"),
 
   askAssistant: (query: string) =>
     request<{ answer: string }>("/assistant", { method: "POST", body: JSON.stringify({ query }) }),

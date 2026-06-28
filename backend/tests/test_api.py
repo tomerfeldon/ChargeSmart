@@ -134,6 +134,20 @@ def test_technician_views_diagnostics():
     assert any(c["status"] == "faulted" for c in body["chargers"])
 
 
+# --- Analysis report (Book §5.4 / Table 15) --------------------------------- #
+def test_analysis_report():
+    r = client.get("/analysis", headers=hdr(MANAGER))
+    assert r.status_code == 200
+    body = r.json()
+    assert body["stats"]["vehicle_count"] > 0
+    assert len(body["series"]) > 0
+    # Managed load never crosses the building limit; uncontrolled peak is far higher.
+    assert body["stats"]["peak_load_kw"] <= body["building_limit_kw"] + 1e-6
+    assert body["unmanaged_peak_kw"] > body["building_limit_kw"]
+    # Each series point carries both curves for the chart.
+    assert {"t", "managed", "unmanaged"} <= set(body["series"][0].keys())
+
+
 # --- Assistant (stub until M6) ---------------------------------------------- #
 def test_assistant_returns_answer():
     r = client.post("/assistant", json={"query": "Is the building under safe load?"}, headers=hdr(RESIDENT))
