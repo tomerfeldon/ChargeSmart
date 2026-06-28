@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+# Make the `app` package importable when running pytest from backend/.
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"

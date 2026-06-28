@@ -1,0 +1,215 @@
+/* ChargeSmart — "Grid Control" design system
+   An energy-operations console: near-black substrate, electric-lime live power,
+   cyan base load, red reserved for the safety ceiling and faults. */
+
+:root {
+  /* Substrate */
+  --bg: #07080a;
+  --bg-grid: rgba(180, 255, 90, 0.035);
+  --panel: #101319;
+  --panel-2: #0c0f14;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-bright: rgba(182, 255, 58, 0.28);
+
+  /* Ink */
+  --text: #e9ece4;
+  --text-dim: #8b9088;
+  --text-faint: #565c54;
+
+  /* Signal colors */
+  --lime: #b6ff3a; /* live charging power */
+  --lime-soft: rgba(182, 255, 58, 0.12);
+  --cyan: #4ad6e0; /* building base load */
+  --amber: #ffb02e; /* waiting / caution */
+  --red: #ff4d62; /* the limit line / faults — used sparingly */
+  --red-soft: rgba(255, 77, 98, 0.12);
+
+  --font-display: "Bricolage Grotesque", sans-serif;
+  --font-body: "Hanken Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --radius: 14px;
+  --radius-sm: 9px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  /* Layered atmosphere: faint grid + radial glow from the top */
+  background-image:
+    radial-gradient(900px 500px at 70% -10%, rgba(182, 255, 58, 0.08), transparent 60%),
+    linear-gradient(var(--bg-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+  background-size: 100% 100%, 34px 34px, 34px 34px;
+  background-attachment: fixed;
+}
+
+/* Typography */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* Panels */
+.panel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 40%),
+    var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  position: relative;
+}
+
+.panel::before {
+  /* a hairline top highlight, like a machined edge */
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+/* Buttons */
+button {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  transition: all 0.16s ease;
+}
+
+button:hover {
+  border-color: var(--border-bright);
+  color: var(--lime);
+}
+
+button.primary {
+  background: var(--lime);
+  color: #0a0d04;
+  border-color: var(--lime);
+  font-weight: 700;
+}
+
+button.primary:hover {
+  filter: brightness(1.08);
+  color: #0a0d04;
+  box-shadow: 0 0 0 4px var(--lime-soft);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Inputs */
+input, select {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 11px 13px;
+  transition: border-color 0.16s ease;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--border-bright);
+}
+
+label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 7px;
+}
+
+/* Status pills */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+.pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+.pill.charging { color: var(--lime); border-color: var(--border-bright); }
+.pill.charging .dot { background: var(--lime); box-shadow: 0 0 8px var(--lime); }
+.pill.waiting { color: var(--amber); border-color: rgba(255, 176, 46, 0.3); }
+.pill.waiting .dot { background: var(--amber); }
+.pill.completed { color: var(--cyan); border-color: rgba(74, 214, 224, 0.3); }
+.pill.completed .dot { background: var(--cyan); }
+.pill.faulted, .pill.offline, .pill.canceled { color: var(--red); border-color: rgba(255, 77, 98, 0.3); }
+.pill.faulted .dot, .pill.offline .dot, .pill.canceled .dot { background: var(--red); }
+.pill.online { color: var(--lime); border-color: var(--border-bright); }
+.pill.online .dot { background: var(--lime); }
+
+/* Reveal-on-load animation */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise { animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--lime); box-shadow: 0 0 10px var(--lime);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #1c2128; border-radius: 8px; border: 2px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: #262d36; }
+
+a { color: var(--lime); text-decoration: none; }

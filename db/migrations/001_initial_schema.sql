@@ -1,0 +1,84 @@
+-- ChargeSmart — initial schema (M2)
+-- The seven ERD entities of Book §3.2, for PostgreSQL (Supabase).
+-- The in-memory repository (app/db.py) mirrors this exactly; the future
+-- SupabaseRepository will run against these tables behind the same interface.
+
+-- --- Enum types (domains from Book §3.2) ---------------------------------- --
+CREATE TYPE user_role     AS ENUM ('resident', 'manager', 'technician');
+CREATE TYPE charger_status AS ENUM ('online', 'offline', 'faulted');
+CREATE TYPE session_status AS ENUM ('waiting', 'charging', 'completed', 'canceled');
+CREATE TYPE event_type AS ENUM (
+    'session_started', 'session_completed', 'reoptimization',
+    'charger_fault', 'disconnect', 'limit_changed', 'feasibility_warning'
+);
+
+-- --- Building: the hard power ceiling lives here --------------------------- --
+CREATE TABLE buildings (
+    building_id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    address               TEXT   NOT NULL,
+    max_building_power_kw DOUBLE PRECISION NOT NULL CHECK (max_building_power_kw > 0)
+);
+
+-- --- User: identities and role-based permissions -------------------------- --
+CREATE TABLE users (
+    user_id       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    building_id   BIGINT NOT NULL REFERENCES buildings (building_id) ON DELETE CASCADE,
+    email         TEXT   NOT NULL UNIQUE,
+    password_hash TEXT   NOT NULL,
+    role          user_role NOT NULL,
+    full_name     TEXT   NOT NULL
+);
+
+-- --- Charger: physical charging point; max_power_output_kw is the 4th ------ --
+-- allocation constraint (decision D1). -------------------------------------- --
+CREATE TABLE chargers (
+    charger_id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    building_id         BIGINT NOT NULL REFERENCES buildings (building_id) ON DELETE CASCADE,
+    max_power_output_kw DOUBLE PRECISION NOT NULL CHECK (max_power_output_kw > 0),
+    status              charger_status NOT NULL DEFAULT 'online'
+);
+
+-- --- Vehicle: static physical properties (normalized away from session) --- --
+CREATE TABLE vehicles (
+    vehicle_id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id             BIGINT NOT NULL REFERENCES users (user_id) ON DELETE CASCADE,
+    license_plate       TEXT   NOT NULL UNIQUE,
+    battery_capacity_kwh DOUBLE PRECISION NOT NULL CHECK (battery_capacity_kwh > 0),
+    max_charge_rate_kw  DOUBLE PRECISION NOT NULL CHECK (max_charge_rate_kw > 0)
+);
+
+-- --- ChargingSession: the dynamic entity the scheduler operates on -------- --
+CREATE TABLE charging_sessions (
+    session_id        BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    vehicle_id        BIGINT NOT NULL REFERENCES vehicles (vehicle_id) ON DELETE CASCADE,
+    charger_id        BIGINT NOT NULL REFERENCES chargers (charger_id),
+    start_soc         DOUBLE PRECISION NOT NULL CHECK (start_soc   BETWEEN 0 AND 100),
+    current_soc       DOUBLE PRECISION NOT NULL CHECK (current_soc BETWEEN 0 AND 100),
+    target_soc        DOUBLE PRECISION NOT NULL CHECK (target_soc  BETWEEN 0 AND 100),
+    departure_time    TIMESTAMPTZ NOT NULL,
+    assigned_power_kw DOUBLE PRECISION NOT NULL DEFAULT 0 CHECK (assigned_power_kw >= 0),
+    status            session_status NOT NULL DEFAULT 'waiting'
+);
+CREATE INDEX idx_sessions_charger ON charging_sessions (charger_id);
+CREATE INDEX idx_sessions_status  ON charging_sessions (status);
+
+-- --- BuildingBaseLoad: the time-varying non-EV load trace (Book §4.6.2) --- --
+CREATE TABLE building_base_load (
+    load_id      BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    building_id  BIGINT NOT NULL REFERENCES buildings (building_id) ON DELETE CASCADE,
+    "timestamp"  TIMESTAMPTZ NOT NULL,
+    base_load_kw DOUBLE PRECISION NOT NULL CHECK (base_load_kw >= 0)
+);
+-- Supports the step-function lookup "most recent point at or before t".
+CREATE INDEX idx_base_load_building_time ON building_base_load (building_id, "timestamp" DESC);
+
+-- --- SystemEventLog: diagnostics for the technician dashboard ------------- --
+CREATE TABLE system_event_log (
+    event_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    building_id BIGINT NOT NULL REFERENCES buildings (building_id) ON DELETE CASCADE,
+    charger_id  BIGINT NULL REFERENCES chargers (charger_id) ON DELETE SET NULL,
+    "timestamp" TIMESTAMPTZ NOT NULL,
+    event_type  event_type NOT NULL,
+    description TEXT NOT NULL
+);
+CREATE INDEX idx_events_building_time ON system_event_log (building_id, "timestamp" DESC);

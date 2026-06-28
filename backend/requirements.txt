@@ -1,0 +1,11 @@
+# ChargeSmart backend — M0 (contract + mock server)
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+
+# Added in later milestones (kept here for reference, install as needed):
+# psycopg[binary]==3.2.3       # M2 — PostgreSQL access
+# supabase==2.10.0             # M2 — Supabase client
+# anthropic==0.42.0            # M6 — Claude assistant
+# pytest==8.3.4                # M1+ — unit/integration tests
+# httpx==0.28.1                # M4 — FastAPI test client

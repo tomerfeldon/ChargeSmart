@@ -1,0 +1,27 @@
+# Python
+backend/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+.env.*
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+
+# TypeScript build artifacts (emitted by tsc for the composite vite.config project)
+*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
+
+# Datasets (downloaded by ingestion scripts, not committed) — see docs/DATASET.md
+data/
+*.csv
+*.json.gz
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
