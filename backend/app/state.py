@@ -8,13 +8,20 @@ service layer or the endpoints.
 
 from __future__ import annotations
 
-from .db import InMemoryRepository
+import os
+
+from dotenv import load_dotenv
+
+from .db import InMemoryRepository, Repository
 from .entities import ChargerStatus, UserRole
 from .security import hash_password
 
+# Load backend/.env (DATABASE_URL, ANTHROPIC_API_KEY, ...) if present.
+load_dotenv()
+
 DEFAULT_BUILDING_ID = 1
 
-_repo: InMemoryRepository | None = None
+_repo: Repository | None = None
 
 
 def build_seeded_repo() -> InMemoryRepository:
@@ -31,10 +38,21 @@ def build_seeded_repo() -> InMemoryRepository:
     return repo
 
 
-def get_repo() -> InMemoryRepository:
+def get_repo() -> Repository:
+    """Return the live repository.
+
+    If DATABASE_URL is set, use the Supabase/PostgreSQL store (seeded once via
+    scripts/seed_supabase.py); otherwise fall back to a freshly seeded in-memory store.
+    """
     global _repo
     if _repo is None:
-        _repo = build_seeded_repo()
+        database_url = os.environ.get("DATABASE_URL")
+        if database_url:
+            from .repository_pg import SupabaseRepository
+
+            _repo = SupabaseRepository(database_url)
+        else:
+            _repo = build_seeded_repo()
     return _repo
 
 
