@@ -8,6 +8,40 @@ over a historical dataset (Book §2.3, §3.5). We need two kinds of trace:
 2. **Building base load** — the time-varying non-EV consumption (elevators, HVAC,
    lighting) that shrinks the charging budget (Book §4.6.2).
 
+## IMPLEMENTED — synthetic generator (privacy-driven substitution for D2)
+
+Real charging datasets (including ACN-Data) carry personal/location data, and access was
+not available for this project for **data-privacy** reasons. We therefore generate a
+**deterministic synthetic dataset** that produces both traces, stored as CSV, and replay
+it through the scheduler. This is a documented, deliberate deviation from D2 — the book
+itself only ever planned to *select* a dataset, and trace-driven simulation over a
+synthetic-but-realistic trace is a standard, defensible validation method.
+
+- Generator + ingestion: [`backend/app/dataset.py`](../backend/app/dataset.py)
+  (unit-tested in `backend/tests/test_dataset.py`).
+- Produce the dataset: `py scripts/generate_dataset.py` → writes `data/sessions.csv`
+  and `data/base_load.csv` (git-ignored; regenerated deterministically from a seed).
+- Validate end-to-end: `py scripts/run_from_dataset.py` → ingests the CSVs, runs the
+  5-minute cycle over the night, prints the Table 15 statistics and the
+  managed-vs-uncontrolled peak. A 30-vehicle / 80 kW run yields 100% on-time with the
+  load held at/below the ceiling, versus a ~338 kW uncontrolled peak.
+
+### Synthetic CSV schema
+`sessions.csv`: `license_plate, charger_id, battery_capacity_kwh, max_charge_rate_kw,
+start_soc, target_soc, connection_offset_min, departure_offset_min` (times are minute
+offsets from a fixed simulation start, so the trace is portable and reproducible).
+`base_load.csv`: `offset_min, base_load_kw` (an evening elevator/HVAC peak decaying
+overnight, per Book Table 11).
+
+**The crucial property:** the replay engine ingests these via the same `Arrival` +
+base-load interface a *real* dataset would use (`to_arrivals`, `load_base_load`). The
+ACN-Data mapping below is therefore still the live "swap in real data later" path — only
+the read layer changes, never the scheduler or analysis.
+
+---
+
+## Future real-data path (kept for when access is available)
+
 ## Why two sources
 
 We searched for a single public dataset carrying both EV sessions and building-level

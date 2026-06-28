@@ -40,9 +40,17 @@ Demo logins: `resident@chargesmart.test / resident123`,
 
 ```
 cd backend
-.venv\Scripts\python.exe -m pytest          # 55 tests (scheduler, repo, simulation, API, analysis)
-.venv\Scripts\python.exe scripts/run_night.py   # 30-vehicle simulated night (Table 15 stats)
+.venv\Scripts\python.exe -m pytest               # 69 tests (scheduler, repo, simulation, API, analysis, dataset)
+.venv\Scripts\python.exe scripts/run_night.py    # in-code 30-vehicle night (Table 15 stats)
+
+# Trace-driven run over a generated dataset on disk:
+.venv\Scripts\python.exe scripts/generate_dataset.py   # writes data/*.csv (deterministic)
+.venv\Scripts\python.exe scripts/run_from_dataset.py   # ingest + simulate + report
 ```
+
+The dataset is **synthetic** (real charging data is private) but realistic and
+deterministic; the replay engine ingests it through the same interface a real dataset
+would use. See [docs/DATASET.md](docs/DATASET.md).
 
 ## AI assistant (M6)
 
