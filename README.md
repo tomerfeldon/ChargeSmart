@@ -26,6 +26,34 @@ Authoritative spec: `ChargeSmart_Project_Book_v5_EN.docx`. Development plan and 
 The scheduling core is a pure, isolated module (no DB/API) so it can be unit-tested in
 full and reused for offline analysis.
 
+## Setup (first time — for collaborators)
+
+Requires **Python 3.12+, Node 18+, Git**. The repo excludes `.venv/`, `node_modules/`,
+and `backend/.env` (all git-ignored), so after cloning you must install dependencies:
+
+```bash
+git clone https://github.com/tomerfeldon/ChargeSmart.git
+cd ChargeSmart
+
+# Backend deps
+cd backend
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt   # Windows
+# macOS/Linux:  .venv/bin/python -m pip install -r requirements.txt
+cd ..
+
+# Frontend deps
+cd frontend
+npm install
+cd ..
+```
+
+**Database — your choice:**
+- **No setup (easiest):** with no `backend/.env`, the app runs on a seeded **in-memory**
+  store — fully functional (scheduler, simulation, UI, analysis), just not shared/persistent.
+- **Shared Supabase:** create `backend/.env` with `DATABASE_URL=<connection string>`
+  (ask the project owner for it — never commit it). Then everyone shares the same live data.
+
 ## Run it
 
 **Backend** (from `backend/`):
@@ -37,7 +65,6 @@ full and reused for offline analysis.
 **Frontend** (from `frontend/`):
 
 ```
-npm install      # first time only
 npm run dev      # http://localhost:5173
 ```
 
