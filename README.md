@@ -1,6 +1,6 @@
 # ChargeSmart
 
-Smart EV charging management for residential buildings — a software-only scheduling
+Smart EV charging management for residential buildings, a software-only scheduling
 layer that prevents electrical overload while guaranteeing charging deadlines.
 
 ## 🌐 Live demo
