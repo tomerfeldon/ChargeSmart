@@ -1,113 +1,179 @@
 # ChargeSmart
 
-Smart EV charging management for residential buildings, a software-only scheduling
-layer that prevents electrical overload while guaranteeing charging deadlines.
+**Smart EV charging management for residential buildings** — a software-only scheduling
+layer that prevents electrical overload while guaranteeing every vehicle's charging deadline.
 
-## 🌐 Live demo
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-4169E1?logo=postgresql&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-74%20passing-success)
 
-- **App:** https://charge-smart-psi.vercel.app  (log in as `manager@chargesmart.test` / `manager123`)
-- **API:** https://chargesmart-api.onrender.com/docs
+When many tenants charge electric vehicles at once, the combined demand can exceed a
+building's electrical capacity and trip its main breaker. ChargeSmart solves this in
+software: a greedy, urgency-based scheduler allocates charging power across all connected
+vehicles so the building's power limit is **never** exceeded, while still getting each car
+to its target charge by its departure time — with no proprietary hardware.
 
-Hosted on Vercel (frontend) + Render (backend) + Supabase (PostgreSQL). The Render free
-tier sleeps after ~15 min idle, so the first load may take ~50 s to wake.
+> [!NOTE]
+> **Live demo:** https://charge-smart-psi.vercel.app
+> Sign in as `manager@chargesmart.test` / `manager123` (also `resident@…` and `tech@…`,
+> password `<role>123`). The backend runs on a free tier that sleeps when idle, so the
+> first request may take ~50 s to wake.
 
-Authoritative spec: `ChargeSmart_Project_Book_v5_EN.docx`. Development plan and decisions:
-[PLAN.md](PLAN.md). Dataset choice: [docs/DATASET.md](docs/DATASET.md).
+## Features
 
-## Architecture (three tiers)
+- **Hard safety guarantee** — aggregate charging load never crosses the building limit,
+  enforced on every scheduling cycle.
+- **Urgency-based scheduling** — power is prioritized by `energy needed ÷ time until
+  departure`, not shared equally; urgent cars charge first, relaxed cars yield.
+- **Dynamic budget** — the charging budget is the building limit minus the live base load
+  (elevators, HVAC, lighting).
+- **Trace-driven simulation** — replays a full charging night on a 5-minute cycle and
+  reports the managed-vs-uncontrolled comparison and per-night statistics.
+- **Role-based dashboards** — resident (register a vehicle), manager (live power dashboard
+  + evaluation chart), technician (diagnostics), with a live Recharts power profile.
+- **Read-only AI assistant** — ask natural-language questions about the live system state
+  (optional, Claude-powered).
+- **Swappable data tier** — the repository pattern lets the same scheduler run on an
+  in-memory store or PostgreSQL/Supabase with zero algorithm changes.
 
-- **`backend/`** — Python + FastAPI. Pure scheduling core (`app/scheduler.py`), repository
-  (`app/db.py`), replay engine (`app/simulation.py`), statistics (`app/analysis.py`),
-  REST API + JWT auth (`app/main.py`).
-- **`frontend/`** — React + TypeScript (Vite), Recharts. "Grid Control" dashboard with
-  resident / manager / technician role views.
-- **`db/`** — PostgreSQL schema (`migrations/001_initial_schema.sql`) for the 7 entities.
+## How it works
 
-The scheduling core is a pure, isolated module (no DB/API) so it can be unit-tested in
-full and reused for offline analysis.
+Each connected vehicle gets an urgency score — the minimum charging rate it needs to reach
+its target by departure:
 
-## Setup (first time — for collaborators)
+```
+urgency = energy_required / time_until_departure   [kW]
+```
 
-Requires **Python 3.12+, Node 18+, Git**. The repo excludes `.venv/`, `node_modules/`,
-and `backend/.env` (all git-ignored), so after cloning you must install dependencies:
+Every cycle the scheduler sorts vehicles by descending urgency and greedily assigns each
+
+```
+min(vehicle max rate, required rate, remaining budget, charger max power)
+```
+
+subtracting from the budget as it goes. When the budget is spent, the remaining vehicles
+wait. Because urgency is recomputed each cycle, a throttled car's urgency rises over time
+and it self-corrects back into priority — so a simple greedy loop approximates a globally
+fair schedule while keeping the power limit as a hard constraint.
+
+## Architecture
+
+Three decoupled tiers, with the scheduling core kept pure and isolated:
+
+```
+ React + TypeScript  ──HTTP──▶  FastAPI (Python)  ──▶  PostgreSQL (Supabase)
+    Vercel                        Render                 7-entity schema
+    role dashboards               REST API + JWT         scheduler = pure module
+```
+
+- **`backend/`** — FastAPI. The scheduling core (`app/scheduler.py`) is a pure,
+  dependency-free module isolated from the API and database, so it can be unit-tested in
+  full and reused for offline analysis. Also: repository layer (`app/db.py`,
+  `app/repository_pg.py`), replay engine (`app/simulation.py`), statistics
+  (`app/analysis.py`), and the AI assistant (`app/assistant.py`).
+- **`frontend/`** — React + TypeScript (Vite), a "Grid Control" dashboard built on Recharts.
+- **`db/`** — PostgreSQL schema for the seven data entities.
+
+## Getting started
+
+> [!TIP]
+> Just want to see it running? Open the [live demo](https://charge-smart-psi.vercel.app) —
+> no install required.
+
+### Prerequisites
+
+Python 3.12+, Node 18+, and Git.
+
+### Setup
 
 ```bash
 git clone https://github.com/tomerfeldon/ChargeSmart.git
 cd ChargeSmart
 
-# Backend deps
+# Backend
 cd backend
 python -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt   # Windows
 # macOS/Linux:  .venv/bin/python -m pip install -r requirements.txt
 cd ..
 
-# Frontend deps
+# Frontend
 cd frontend
 npm install
 cd ..
 ```
 
-**Database — your choice:**
-- **No setup (easiest):** with no `backend/.env`, the app runs on a seeded **in-memory**
-  store — fully functional (scheduler, simulation, UI, analysis), just not shared/persistent.
-- **Shared Supabase:** create `backend/.env` with `DATABASE_URL=<connection string>`
-  (ask the project owner for it — never commit it). Then everyone shares the same live data.
+### Run
 
-## Run it
+In two terminals:
 
-**Backend** (from `backend/`):
-
-```
+```bash
+# Backend (from backend/)
 .venv\Scripts\python.exe -m uvicorn app.main:app --reload   # http://127.0.0.1:8000/docs
+
+# Frontend (from frontend/)
+npm run dev                                                  # http://localhost:5173
 ```
 
-**Frontend** (from `frontend/`):
+> [!NOTE]
+> **A database is optional.** With no `backend/.env`, the app runs on a seeded in-memory
+> store — fully functional, just not persistent. To use PostgreSQL, create `backend/.env`
+> with `DATABASE_URL=<Supabase connection string>` and run
+> `python scripts/seed_supabase.py` once.
 
-```
-npm run dev      # http://localhost:5173
-```
+### Tests and simulation
 
-Demo logins: `resident@chargesmart.test / resident123`,
-`manager@chargesmart.test / manager123`, `tech@chargesmart.test / tech123`.
-
-## Tests & demo
-
-```
+```bash
 cd backend
-.venv\Scripts\python.exe -m pytest               # 69 tests (scheduler, repo, simulation, API, analysis, dataset)
-.venv\Scripts\python.exe scripts/run_night.py    # in-code 30-vehicle night (Table 15 stats)
-
-# Trace-driven run over a generated dataset on disk:
-.venv\Scripts\python.exe scripts/generate_dataset.py   # writes data/*.csv (deterministic)
-.venv\Scripts\python.exe scripts/run_from_dataset.py   # ingest + simulate + report
+.venv\Scripts\python.exe -m pytest                     # 74 tests
+.venv\Scripts\python.exe scripts/run_night.py          # simulate a 30-vehicle night
+.venv\Scripts\python.exe scripts/generate_dataset.py   # write a synthetic dataset to data/
+.venv\Scripts\python.exe scripts/run_from_dataset.py   # replay it and print the statistics
 ```
 
-The dataset is **synthetic** (real charging data is private) but realistic and
-deterministic; the replay engine ingests it through the same interface a real dataset
-would use. See [docs/DATASET.md](docs/DATASET.md).
+> [!NOTE]
+> Four live-database integration tests skip automatically unless `DATABASE_URL` is set.
 
-## AI assistant (M6)
-
-The `/assistant` endpoint and the in-app assistant panel are a **read-only** layer over
-live state (Book §4.6.6). They activate when an Anthropic API key is present:
+## Project structure
 
 ```
-# backend, before starting uvicorn:
-setx ANTHROPIC_API_KEY "sk-ant-..."     # then open a new shell
+backend/
+  app/         scheduler · repository (in-memory + PostgreSQL) · simulation · analysis · API · auth · assistant
+  tests/       74 automated tests
+  scripts/     simulation runners and database seeders
+frontend/
+  src/         views (resident / manager / technician), components, API client
+db/
+  migrations/  PostgreSQL schema (7 entities)
+docs/          dataset and deployment notes
 ```
 
-Without a key, the assistant returns a graceful "unavailable" message — everything else
-works unchanged.
+## Deployment
 
-## Status
+Deployed on Vercel (frontend) + Render (backend) + Supabase (database). See
+[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the full walkthrough; configuration lives in
+[`render.yaml`](render.yaml) and [`frontend/vercel.json`](frontend/vercel.json).
 
-All in-scope milestones built and verified: M0 API contract · M1 scheduler core ·
-M2 data model + repository · M3 simulation · M4 REST API + auth · M5 frontend ·
-M6 read-only AI assistant · M7 statistical analysis. **60 backend tests pass; frontend
-builds clean.**
+## AI assistant (optional)
 
-Pending (need your resources): activate M6 with an Anthropic key; swap the in-memory
-store for a live `SupabaseRepository`; ingest the real ACN-Data dataset.
+Set `ANTHROPIC_API_KEY` (in `backend/.env` locally, or as an environment variable on
+Render) to activate the in-app assistant. Without a key it returns a graceful
+"unavailable" message and everything else works unchanged.
 
-Out of scope (future work, Book Ch. 6): OCPP hardware integration, live smart-meter feeds.
+## Documentation
+
+- [PLAN.md](PLAN.md) — milestone development plan and design decisions
+- [docs/DATASET.md](docs/DATASET.md) — dataset choice and schema mapping
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — deployment guide
+
+## Acknowledgements
+
+Final-year software engineering project, Afeka College of Engineering — Department of
+Software Engineering. Authors: Tomer Feldon, Avia Luria, Yuval Yehoshua.
+
+> [!IMPORTANT]
+> Hardware integration (OCPP) and live smart-meter feeds are out of scope by design; the
+> system is validated through trace-driven simulation over a historical dataset.
