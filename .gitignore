@@ -28,3 +28,6 @@ Thumbs.db
 
 # Project book (academic doc) - kept locally, not in the repo
 *.docx
+
+# Development plan - kept locally, not in the repo
+PLAN.md

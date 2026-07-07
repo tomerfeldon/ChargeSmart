@@ -1,7 +1,7 @@
 # Dataset Selection & Schema Mapping
 
-Resolves **Ambiguity #3** (the project book never names a dataset) and decision **D2**
-in [PLAN.md](../PLAN.md). The book validates the system by *trace-driven simulation*
+Resolves **Ambiguity #3** (the project book never names a dataset) and design decision
+**D2**. The book validates the system by *trace-driven simulation*
 over a historical dataset (Book §2.3, §3.5). We need two kinds of trace:
 
 1. **EV charging sessions** — arrivals, departures (deadlines), energy requested.

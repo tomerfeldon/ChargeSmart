@@ -165,7 +165,6 @@ Render) to activate the in-app assistant. Without a key it returns a graceful
 
 ## Documentation
 
-- [PLAN.md](PLAN.md) - milestone development plan and design decisions
 - [docs/DATASET.md](docs/DATASET.md) - dataset choice and schema mapping
 - [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) - deployment guide
 
