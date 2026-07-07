@@ -1,4 +1,4 @@
-"""Statistical analysis of a simulated charging night (M7) — Book §5.4 / Table 15.
+"""Statistical analysis of a simulated charging night (M7) - Book §5.4 / Table 15.
 
 Pure functions over a `SimulationResult`: no DB, no network (the `unmanaged_load_series`
 baseline reads charger caps from the repository read-only). These are the measures that
@@ -82,7 +82,7 @@ def unmanaged_load_series(
     """The uncontrolled baseline: every vehicle charges at full rate on arrival.
 
     Each vehicle draws ``min(max_charge_rate, charger_max_power)`` continuously from its
-    connection time until it has delivered its required energy — with no regard to the
+    connection time until it has delivered its required energy - with no regard to the
     building limit. This is the profile that would trip protection (Book §5.4); plotting
     it against the managed profile shows both the safety guarantee and the peak shaving.
     """

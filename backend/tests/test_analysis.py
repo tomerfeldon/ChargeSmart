@@ -1,7 +1,7 @@
 """Tests for the statistical analysis module (M7).
 
 These encode Book §5.4 / Table 15: the measures that characterise a simulated charging
-night, plus the headline managed-vs-uncontrolled comparison — the uncontrolled baseline
+night, plus the headline managed-vs-uncontrolled comparison - the uncontrolled baseline
 crosses the building limit while the managed regime never does.
 """
 
@@ -82,6 +82,6 @@ def test_uncontrolled_baseline_exceeds_limit_while_managed_does_not():
     unmanaged = unmanaged_load_series(repo, 1, arrivals, NOW, NOW + timedelta(hours=2))
     unmanaged_peak = max(load for _, load in unmanaged)
 
-    # 8 vehicles * 11 kW = 88 kW uncontrolled — well over the 50 kW limit.
+    # 8 vehicles * 11 kW = 88 kW uncontrolled - well over the 50 kW limit.
     assert unmanaged_peak > limit
     assert managed.peak_load_kw <= limit + 1e-9

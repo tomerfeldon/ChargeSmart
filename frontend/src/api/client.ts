@@ -1,4 +1,4 @@
-// HttpService — the single module that talks to the FastAPI backend (Book §4.4).
+// HttpService - the single module that talks to the FastAPI backend (Book §4.4).
 // Mirrors the client-server interaction of Book §3.7.1.
 
 import type {

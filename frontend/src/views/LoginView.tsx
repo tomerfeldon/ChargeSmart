@@ -55,7 +55,7 @@ export function LoginView() {
         </form>
 
         <div style={{ marginTop: 22 }}>
-          <p className="eyebrow" style={{ marginBottom: 10, textAlign: "center" }}>Demo accounts — click to fill</p>
+          <p className="eyebrow" style={{ marginBottom: 10, textAlign: "center" }}>Demo accounts - click to fill</p>
           <div style={{ display: "flex", gap: 8 }}>
             {DEMO.map((d) => (
               <button

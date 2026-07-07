@@ -57,14 +57,14 @@ export function ResidentView() {
 
   const ready = created?.projected_completion_time
     ? new Date(created.projected_completion_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    : "—";
+    : "-";
 
   return (
     <>
       <TopBar live />
       <div style={wrap}>
         <SectionTitle eyebrow="My vehicle" title="Connect to Charge" />
-        {error && <Banner text={`Backend unreachable — ${error}.`} />}
+        {error && <Banner text={`Backend unreachable - ${error}.`} />}
 
         <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 16 }}>
           <form onSubmit={submit} className="panel rise" style={{ padding: 26 }}>

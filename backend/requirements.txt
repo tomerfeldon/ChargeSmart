@@ -8,7 +8,7 @@ pydantic==2.10.4
 # Auth
 pyjwt==2.10.1
 
-# Data tier — PostgreSQL via Supabase (M2 live wiring) + .env loading
+# Data tier - PostgreSQL via Supabase (M2 live wiring) + .env loading
 psycopg[binary]==3.2.3
 python-dotenv==1.0.1
 

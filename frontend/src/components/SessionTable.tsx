@@ -22,7 +22,7 @@ function SocBar({ current, target }: { current: number; target: number }) {
 }
 
 function fmtTime(iso: string | null): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 

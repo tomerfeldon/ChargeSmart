@@ -2,7 +2,7 @@
 
 The engine drives the fixed 5-minute cycle (Book §3.5, §4.6.5) over the repository:
 detect new vehicles, read base load, compute budget, allocate, advance SoC, persist.
-These tests validate the properties that only emerge over a whole run — most
+These tests validate the properties that only emerge over a whole run - most
 importantly the end-to-end deadline guarantee and the hard limit under oversubscription
 (Book Table 14).
 
@@ -79,7 +79,7 @@ def test_feasible_night_meets_all_deadlines():
 # --- New-vehicle detection within one cycle (Book §4.6.5) ------------------- #
 def test_new_vehicle_admitted_within_one_cycle():
     repo = make_repo()
-    # Connects 7 minutes in — must be active by the next 5-min tick (t+10), i.e. <5 min.
+    # Connects 7 minutes in - must be active by the next 5-min tick (t+10), i.e. <5 min.
     late = arrival("LATE", conn_h=7 / 60.0, depart_h=3.0)
     result = run_simulation(repo, 1, start=NOW, end=NOW + timedelta(minutes=20), arrivals=[late])
     by_time = {s.timestamp: s.active_count for s in result.snapshots}

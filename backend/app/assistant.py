@@ -1,8 +1,8 @@
-"""Conversational AI assistant (M6) — a read-only layer over live state (Book §4.6.6).
+"""Conversational AI assistant (M6) - a read-only layer over live state (Book §4.6.6).
 
 On every query the current system state is serialized and supplied to Claude as context,
 so each answer reflects live data. The assistant has NO authority to modify the schedule
-— it only reads. This preserves the safety guarantee while adding an interpretive layer.
+- it only reads. This preserves the safety guarantee while adding an interpretive layer.
 
 The LLM client is injected behind the ``LLMClient`` protocol, so the assistant is unit-
 tested with a fake client. The real client (``AnthropicClient``) talks to the Anthropic
@@ -25,7 +25,7 @@ SYSTEM_PROMPT = (
     "You are the ChargeSmart assistant, a read-only helper for a smart EV-charging "
     "system in a residential building. Answer questions ONLY from the live system state "
     "provided in the user's message. You are strictly read-only: you cannot change the "
-    "charging schedule, power limits, or any vehicle's allocation — if asked to, explain "
+    "charging schedule, power limits, or any vehicle's allocation - if asked to, explain "
     "that the scheduler is the only component that allocates power. Stay within the "
     "EV-charging domain. Answer in the same language as the question. Be concise."
 )

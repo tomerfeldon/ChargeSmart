@@ -2,7 +2,7 @@
 
 Builds a deterministic 30-vehicle scenario, runs the managed scheduler over the night,
 and prints the Table 15 statistics alongside the uncontrolled baseline peak. No external
-services — pure in-memory simulation.
+services - pure in-memory simulation.
 
 Run from backend/:  py scripts/run_night.py
 """
@@ -68,10 +68,10 @@ def main() -> None:
     unmanaged_peak = max(load for _, load in unmanaged)
 
     print("=" * 56)
-    print(f" ChargeSmart — {N_VEHICLES}-vehicle simulated night")
+    print(f" ChargeSmart - {N_VEHICLES}-vehicle simulated night")
     print(f" Building limit: {BUILDING_LIMIT_KW:.0f} kW | steps: {len(result.snapshots)} x 5 min")
     print("=" * 56)
-    print(" Table 15 — statistical measures")
+    print(" Table 15 - statistical measures")
     print("-" * 56)
     print(f"  Mean building load .......... {stats.mean_building_load_kw:6.1f} kW")
     print(f"  Peak load ................... {stats.peak_load_kw:6.1f} kW")

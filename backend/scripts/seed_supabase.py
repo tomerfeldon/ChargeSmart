@@ -3,7 +3,7 @@
 Run ONCE after creating the tables (db/migrations/001_initial_schema.sql), from backend/:
     py scripts/seed_supabase.py
 
-Reads DATABASE_URL from backend/.env. Idempotent — re-running updates the seed rows
+Reads DATABASE_URL from backend/.env. Idempotent - re-running updates the seed rows
 rather than duplicating them. Also serves as a connection smoke-test.
 """
 

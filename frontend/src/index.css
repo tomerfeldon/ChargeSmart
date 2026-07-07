@@ -1,4 +1,4 @@
-/* ChargeSmart — "Grid Control" design system
+/* ChargeSmart - "Grid Control" design system
    An energy-operations console: near-black substrate, electric-lime live power,
    cyan base load, red reserved for the safety ceiling and faults. */
 
@@ -21,7 +21,7 @@
   --lime-soft: rgba(182, 255, 58, 0.12);
   --cyan: #4ad6e0; /* building base load */
   --amber: #ffb02e; /* waiting / caution */
-  --red: #ff4d62; /* the limit line / faults — used sparingly */
+  --red: #ff4d62; /* the limit line / faults - used sparingly */
   --red-soft: rgba(255, 77, 98, 0.12);
 
   --font-display: "Bricolage Grotesque", sans-serif;

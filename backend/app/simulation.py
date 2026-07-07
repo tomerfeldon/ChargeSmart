@@ -1,4 +1,4 @@
-"""Replay / simulation engine (M3) — the fixed 5-minute scheduling cycle.
+"""Replay / simulation engine (M3) - the fixed 5-minute scheduling cycle.
 
 Drives trace-driven replay over the repository (Book §2.3, §3.5, §4.6.5). On each tick
 it: (1) admits vehicles that have connected since the last cycle, (2) reads the building
@@ -6,7 +6,7 @@ base load, (3) computes the charging budget, (4) ranks and allocates via the pur
 scheduler, (5) advances each vehicle's SoC and marks completions, (6) records a snapshot.
 
 The engine talks only to the abstract `Repository`, so the same code runs over synthetic
-traces (tests today) and the real ACN-Data dataset (once ingested) — and, later, over
+traces (tests today) and the real ACN-Data dataset (once ingested) - and, later, over
 live feeds (Book §6.6) without touching the scheduler.
 """
 
@@ -66,7 +66,7 @@ def to_vehicle_session(repo: Repository, session: ChargingSession) -> VehicleSes
     """Join a stored session to its vehicle physics and charger cap (decision D1).
 
     A charger that is not ONLINE contributes a cap of 0 kW, so its vehicle receives no
-    power and waits — the faulted-charger edge case of Book Table 12.
+    power and waits - the faulted-charger edge case of Book Table 12.
     """
     vehicle = repo.get_vehicle(session.vehicle_id)
     charger = repo.get_charger(session.charger_id)
@@ -128,7 +128,7 @@ def recompute(repo: Repository, building_id: int, now: datetime) -> StepSnapshot
 
     This is the event-driven recompute (decision D3): triggered by a vehicle
     connecting, a departure/parameter edit, or a limit change. Unlike ``step`` it does
-    not advance the simulated clock — it only re-distributes power under the current
+    not advance the simulated clock - it only re-distributes power under the current
     budget and persists each session's ``assigned_power_kw`` and waiting/charging state.
     """
     base_load = repo.get_base_load_at(building_id, now)

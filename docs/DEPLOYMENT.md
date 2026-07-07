@@ -10,7 +10,7 @@ Have your Supabase **Session pooler** connection string ready (the same one in
 
 ---
 
-## Part A — Backend on Render
+## Part A - Backend on Render
 
 1. Go to **https://render.com** → sign up / log in with GitHub.
 2. **New +** → **Blueprint** → pick the `ChargeSmart` repo. Render reads `render.yaml`
@@ -29,7 +29,7 @@ Have your Supabase **Session pooler** connection string ready (the same one in
 
 ---
 
-## Part B — Frontend on Vercel
+## Part B - Frontend on Vercel
 
 1. Go to **https://vercel.com** → sign up / log in with GitHub.
 2. **Add New… → Project** → import the `ChargeSmart` repo.
@@ -41,16 +41,16 @@ Have your Supabase **Session pooler** connection string ready (the same one in
 
 ---
 
-## Part C — Connect them (CORS)
+## Part C - Connect them (CORS)
 
 1. Back in **Render** → chargesmart-api → **Environment** → set
    `CHARGESMART_CORS_ORIGINS` = your Vercel URL (e.g. `https://charge-smart.vercel.app`).
    Save → Render redeploys.
 2. Open the Vercel URL, log in as `manager@chargesmart.test` / `manager123`.
 3. (Optional) Re-seed the demo scenario any time: locally run
-   `py scripts/seed_demo_sessions.py` — it writes to the same Supabase the live site reads.
+   `py scripts/seed_demo_sessions.py` - it writes to the same Supabase the live site reads.
 
-That's it — share the Vercel URL with your professor.
+That's it - share the Vercel URL with your professor.
 
 ---
 
@@ -59,4 +59,4 @@ That's it — share the Vercel URL with your professor.
   and optional `ANTHROPIC_API_KEY` from environment variables (no `.env` in production).
 - All three deployed tiers talk to the **same Supabase database**, so data seeded locally
   appears on the live site.
-- Costs: Supabase free tier, Render free web service, Vercel hobby — all $0 for this scale.
+- Costs: Supabase free tier, Render free web service, Vercel hobby - all $0 for this scale.

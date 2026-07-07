@@ -57,9 +57,9 @@ export function AnalysisPanel() {
                 contentStyle={{ background: "#0c0f14", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, fontFamily: "JetBrains Mono", fontSize: 12 }}
                 labelStyle={{ color: "#8b9088" }}
               />
-              {/* Uncontrolled baseline — soars past the ceiling */}
+              {/* Uncontrolled baseline - soars past the ceiling */}
               <Line type="monotone" dataKey="unmanaged" name="Uncontrolled" stroke="#ff4d62" strokeWidth={2} dot={false} isAnimationActive={false} />
-              {/* Managed — held under the limit */}
+              {/* Managed - held under the limit */}
               <Area type="monotone" dataKey="managed" name="Managed" stroke="#b6ff3a" strokeWidth={2} fill="url(#gManaged)" isAnimationActive={false} />
               <ReferenceLine y={data.building_limit_kw} stroke="#ff4d62" strokeDasharray="5 4" strokeWidth={1.5}
                 label={{ value: `LIMIT ${data.building_limit_kw}kW`, fill: "#ff4d62", fontSize: 10, fontFamily: "JetBrains Mono", position: "insideTopRight" }} />
@@ -71,7 +71,7 @@ export function AnalysisPanel() {
             <Legend color="var(--red)" label={`Uncontrolled peak ${data.unmanaged_peak_kw.toFixed(0)} kW (would trip)`} />
           </div>
 
-          <p className="eyebrow" style={{ marginBottom: 14 }}>Table 15 — statistical measures</p>
+          <p className="eyebrow" style={{ marginBottom: 14 }}>Table 15 - statistical measures</p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 14 }}>
             <Stat label="On-time completion" value={`${(data.stats.on_time_completion_rate * 100).toFixed(0)}%`} accent />
             <Stat label="Peak utilization" value={`${(data.stats.peak_utilization * 100).toFixed(0)}%`} />

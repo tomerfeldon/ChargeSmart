@@ -1,6 +1,6 @@
 """Application service layer (M4): maps HTTP requests to repository + scheduler calls.
 
-The endpoints stay thin; this module owns the orchestration — create/update a session,
+The endpoints stay thin; this module owns the orchestration - create/update a session,
 trigger a recompute (decision D3), and assemble the API response models. Every mutation
 re-solves the allocation so the schedule the caller sees reflects the change.
 """

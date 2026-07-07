@@ -2,7 +2,7 @@
 
 Creates 8 active charging sessions with deliberately varied urgency, so the manager
 dashboard shows the scheduler doing real work: the most urgent vehicles charge at high
-power, mid-urgency ones are throttled, and the least urgent wait — all while the building
+power, mid-urgency ones are throttled, and the least urgent wait - all while the building
 runs exactly at its limit, safely. Idempotent: clears prior sessions/base-load first.
 
 Run from backend/:  py scripts/seed_demo_sessions.py

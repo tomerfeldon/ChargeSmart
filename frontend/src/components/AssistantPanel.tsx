@@ -1,6 +1,6 @@
 // Read-only conversational assistant (Book §4.6.6), available on every screen.
 // Posts natural-language questions to /assistant and renders the answers. It can only
-// read system state — it never changes the schedule.
+// read system state - it never changes the schedule.
 
 import { useRef, useState } from "react";
 import { api } from "../api/client";

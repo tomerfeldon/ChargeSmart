@@ -1,10 +1,10 @@
-"""Repository layer (M2) — the single data-access seam (Book §3.7.3).
+"""Repository layer (M2) - the single data-access seam (Book §3.7.3).
 
 `Repository` is the abstract interface every subsystem (scheduler caller, replay
 engine, API) reads and writes through. `InMemoryRepository` is the implementation
 used for unit tests and for the M3 simulation; a `SupabaseRepository` will implement
 the same interface later, so swapping historical replay for live feeds (Book §6.6)
-touches only this layer — never the scheduler.
+touches only this layer - never the scheduler.
 """
 
 from __future__ import annotations

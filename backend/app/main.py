@@ -1,4 +1,4 @@
-"""ChargeSmart API server (M4) — real endpoints over the scheduler + repository.
+"""ChargeSmart API server (M4) - real endpoints over the scheduler + repository.
 
 The six endpoints of the contract (Book §4.2) plus authentication. Bodies are now
 backed by the pure scheduler and the repository (no more mock data); the response
@@ -71,7 +71,7 @@ def login(payload: LoginRequest, repo: Repository = Depends(repo_dependency)) ->
     return TokenResponse(access_token=create_access_token(user.user_id, user.role), role=user.role)
 
 
-# --- Session management (UC-1, UC-2) — resident ----------------------------- #
+# --- Session management (UC-1, UC-2) - resident ----------------------------- #
 @app.post("/sessions", response_model=SessionRead, status_code=status.HTTP_201_CREATED, tags=["sessions"])
 def create_session(
     payload: SessionCreate,
@@ -94,7 +94,7 @@ def update_session(
         raise HTTPException(status_code=404, detail=f"Session {session_id} not found.")
 
 
-# --- Scheduling — any authenticated user ------------------------------------ #
+# --- Scheduling - any authenticated user ------------------------------------ #
 @app.get("/schedule", response_model=ScheduleResponse, tags=["scheduling"])
 def get_schedule(
     user: User = Depends(get_current_user),
@@ -103,7 +103,7 @@ def get_schedule(
     return service.get_schedule(repo, user.building_id)
 
 
-# --- Building configuration (UC-3) — manager -------------------------------- #
+# --- Building configuration (UC-3) - manager -------------------------------- #
 @app.put("/building/limit", response_model=BuildingRead, tags=["building"])
 def set_building_limit(
     payload: BuildingLimitUpdate,
@@ -113,7 +113,7 @@ def set_building_limit(
     return service.set_building_limit(repo, user.building_id, payload.max_building_power_kw)
 
 
-# --- Analysis report (Book §5.4) — any authenticated user ------------------- #
+# --- Analysis report (Book §5.4) - any authenticated user ------------------- #
 @app.get("/analysis", response_model=AnalysisResponse, tags=["analysis"])
 def get_analysis(
     user: User = Depends(get_current_user),
@@ -123,7 +123,7 @@ def get_analysis(
     return service.build_analysis(repo, user.building_id)
 
 
-# --- Diagnostics (UC-5) — technician or manager ----------------------------- #
+# --- Diagnostics (UC-5) - technician or manager ----------------------------- #
 @app.get("/diagnostics", response_model=DiagnosticsResponse, tags=["diagnostics"])
 def get_diagnostics(
     user: User = Depends(require_role(UserRole.TECHNICIAN, UserRole.MANAGER)),
@@ -132,7 +132,7 @@ def get_diagnostics(
     return service.get_diagnostics(repo, user.building_id)
 
 
-# --- AI assistant (read-only stub until M6) — any authenticated user -------- #
+# --- AI assistant (read-only stub until M6) - any authenticated user -------- #
 @app.post("/assistant", response_model=AssistantResponse, tags=["assistant"])
 def ask_assistant(
     payload: AssistantQuery,

@@ -1,4 +1,4 @@
-"""Synthetic dataset generator + ingestion (M3 — data layer).
+"""Synthetic dataset generator + ingestion (M3 - data layer).
 
 Due to data-privacy constraints, the planned ACN-Data source (decision D2 in PLAN.md)
 is replaced by a documented synthetic generator. It produces realistic charging-session
@@ -7,7 +7,7 @@ through the same `Arrival` + base-load interface a real dataset would use. So th
 algorithm and analysis are unchanged; only this read layer differs from a real-data setup.
 
 Everything is seeded for reproducibility (no wall-clock or unseeded randomness), so a
-given (count, seed) always yields the same dataset — exactly what reproducible Table 14 /
+given (count, seed) always yields the same dataset - exactly what reproducible Table 14 /
 Table 15 results require.
 """
 
@@ -42,7 +42,7 @@ class BaseLoadRecord:
     base_load_kw: float
 
 
-# Representative EV models (capacity kWh, max AC/DC rate kW) — auditable assumptions.
+# Representative EV models (capacity kWh, max AC/DC rate kW) - auditable assumptions.
 _EV_MODELS = [(40.0, 7.4), (52.0, 11.0), (60.0, 11.0), (75.0, 11.0), (85.0, 22.0)]
 
 
@@ -50,7 +50,7 @@ def generate_sessions(count: int, seed: int = 42) -> list[SessionRecord]:
     """Generate `count` overnight top-up sessions. Deterministic for a given seed.
 
     Vehicles connect over the first ~2 hours and leave 5-10 hours later. SoC gaps are
-    modest (overnight top-ups), so a well-sized building can satisfy most deadlines —
+    modest (overnight top-ups), so a well-sized building can satisfy most deadlines -
     mirroring the Book's feasible 30-vehicle scenario while staying varied.
     """
     rng = random.Random(seed)

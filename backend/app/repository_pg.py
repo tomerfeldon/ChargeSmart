@@ -3,7 +3,7 @@
 This is the production data tier the Book specifies (PostgreSQL via Supabase, §3.7). It
 implements the exact same `Repository` interface as `InMemoryRepository`, so the
 scheduler, simulation, service layer, and API are entirely unaware of which store is in
-use — swapping the in-memory store for this one is a data-tier-only change (Book §6.6).
+use - swapping the in-memory store for this one is a data-tier-only change (Book §6.6).
 
 Connection details come from the DATABASE_URL environment variable (never hard-coded).
 """

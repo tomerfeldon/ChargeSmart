@@ -1,4 +1,4 @@
-"""ChargeSmart scheduling core (M1) — pure, isolated, independently testable.
+"""ChargeSmart scheduling core (M1) - pure, isolated, independently testable.
 
 This module is the heart of the system (Book §4.3, §4.6). It has no dependency on
 FastAPI, PostgreSQL, or the network: it takes plain dataclasses plus the current time

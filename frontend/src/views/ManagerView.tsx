@@ -31,7 +31,7 @@ export function ManagerView() {
       <TopBar live />
       <div style={wrap}>
         <SectionTitle eyebrow="Building overview" title="Power Operations" />
-        {error && <Banner text={`Backend unreachable — ${error}. Is uvicorn running on :8000?`} />}
+        {error && <Banner text={`Backend unreachable - ${error}. Is uvicorn running on :8000?`} />}
 
         <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 16, marginBottom: 16 }}>
           <div className="panel rise" style={{ padding: 24 }}>
@@ -44,7 +44,7 @@ export function ManagerView() {
           <div className="panel rise" style={{ padding: 24, animationDelay: "0.06s" }}>
             <p className="eyebrow" style={{ marginBottom: 18 }}>Set charging ceiling</p>
             <p style={{ fontSize: 13, color: "var(--text-dim)", lineHeight: 1.5, marginBottom: 16 }}>
-              The hard constraint. Charging is re-solved instantly under the new limit —
+              The hard constraint. Charging is re-solved instantly under the new limit -
               the aggregate load can never cross it.
             </p>
             <label>New limit (kW)</label>

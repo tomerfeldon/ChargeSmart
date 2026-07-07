@@ -3,7 +3,7 @@
 Run from backend/:  py scripts/generate_dataset.py
 
 Writes data/sessions.csv and data/base_load.csv at the project root. The data/ folder is
-git-ignored — it is regenerated deterministically from (count, seed), so it is never
+git-ignored - it is regenerated deterministically from (count, seed), so it is never
 committed. This is the "historical dataset stored in the database" of Book §2.3, produced
 synthetically because real charging data is private (see docs/DATASET.md).
 """

@@ -1,4 +1,4 @@
-"""Domain entities (M2) — the seven ERD entities of Book §3.2.
+"""Domain entities (M2) - the seven ERD entities of Book §3.2.
 
 These are the in-memory domain objects the repository stores and the rest of the
 backend manipulates. They are mutable dataclasses because the repository updates

@@ -30,7 +30,7 @@ __all__ = [
 
 
 # --------------------------------------------------------------------------- #
-# POST /auth/login  — authenticate and receive a JWT (Book §4.5 Login screen)
+# POST /auth/login  - authenticate and receive a JWT (Book §4.5 Login screen)
 # --------------------------------------------------------------------------- #
 class LoginRequest(BaseModel):
     email: str
@@ -64,7 +64,7 @@ class ChargerRead(BaseModel):
 
 
 class SessionRead(BaseModel):
-    """A charging session — the dynamic entity the scheduler operates on (Book §3.2)."""
+    """A charging session - the dynamic entity the scheduler operates on (Book §3.2)."""
 
     session_id: int
     vehicle_id: int
@@ -98,7 +98,7 @@ class EventLogRead(BaseModel):
 
 
 # --------------------------------------------------------------------------- #
-# POST /sessions  — register a charging session (UC-1)
+# POST /sessions  - register a charging session (UC-1)
 # --------------------------------------------------------------------------- #
 class SessionCreate(BaseModel):
     """Resident-supplied parameters when connecting a vehicle (Book §3.3.1).
@@ -118,10 +118,10 @@ class SessionCreate(BaseModel):
 
 
 # --------------------------------------------------------------------------- #
-# PATCH /sessions/{id}  — update departure / parameters (UC-2)
+# PATCH /sessions/{id}  - update departure / parameters (UC-2)
 # --------------------------------------------------------------------------- #
 class SessionUpdate(BaseModel):
-    """All fields optional — only the supplied ones change; triggers a recompute (D3)."""
+    """All fields optional - only the supplied ones change; triggers a recompute (D3)."""
 
     departure_time: datetime | None = None
     target_soc: float | None = Field(default=None, ge=0, le=100)
@@ -130,7 +130,7 @@ class SessionUpdate(BaseModel):
 
 
 # --------------------------------------------------------------------------- #
-# GET /schedule  — current allocations across the building
+# GET /schedule  - current allocations across the building
 # --------------------------------------------------------------------------- #
 class ScheduleResponse(BaseModel):
     building_limit_kw: float
@@ -142,14 +142,14 @@ class ScheduleResponse(BaseModel):
 
 
 # --------------------------------------------------------------------------- #
-# PUT /building/limit  — manager sets the power budget (UC-3)
+# PUT /building/limit  - manager sets the power budget (UC-3)
 # --------------------------------------------------------------------------- #
 class BuildingLimitUpdate(BaseModel):
     max_building_power_kw: float = Field(gt=0)
 
 
 # --------------------------------------------------------------------------- #
-# GET /diagnostics  — technician view (UC-5)
+# GET /diagnostics  - technician view (UC-5)
 # --------------------------------------------------------------------------- #
 class DiagnosticsResponse(BaseModel):
     chargers: list[ChargerRead]
@@ -157,7 +157,7 @@ class DiagnosticsResponse(BaseModel):
 
 
 # --------------------------------------------------------------------------- #
-# POST /assistant  — read-only natural-language query (Book §4.6.6)
+# POST /assistant  - read-only natural-language query (Book §4.6.6)
 # --------------------------------------------------------------------------- #
 class AssistantQuery(BaseModel):
     query: str = Field(min_length=1, description="Natural-language question about live state.")
@@ -169,7 +169,7 @@ class AssistantResponse(BaseModel):
 
 
 # --------------------------------------------------------------------------- #
-# GET /analysis  — trace-driven evaluation report (Book §5.4, Table 15)
+# GET /analysis  - trace-driven evaluation report (Book §5.4, Table 15)
 # --------------------------------------------------------------------------- #
 class AnalysisStats(BaseModel):
     vehicle_count: int

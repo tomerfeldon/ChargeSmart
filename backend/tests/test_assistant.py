@@ -2,7 +2,7 @@
 
 The assistant is a read-only layer over live system state (Book §4.6.6): it serializes
 the current state as context, sends it to Claude with the user's question, and returns
-the answer. It has NO authority to modify the schedule — these tests pin that.
+the answer. It has NO authority to modify the schedule - these tests pin that.
 
 The LLM client is injected, so the assistant is fully testable with a fake client; no
 API key or network is required here.

@@ -30,7 +30,7 @@ export function DiagnosticsView() {
       <TopBar live />
       <div style={wrap}>
         <SectionTitle eyebrow="Maintenance" title="System Diagnostics" />
-        {error && <Banner text={`Backend unreachable — ${error}.`} />}
+        {error && <Banner text={`Backend unreachable - ${error}.`} />}
 
         <p className="eyebrow" style={{ marginBottom: 14 }}>Charging points</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))", gap: 14, marginBottom: 30 }}>

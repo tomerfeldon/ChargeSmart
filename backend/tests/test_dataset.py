@@ -1,8 +1,8 @@
-"""Tests for the synthetic dataset generator and ingestion (M3 — data layer).
+"""Tests for the synthetic dataset generator and ingestion (M3 - data layer).
 
 Due to data-privacy constraints, ACN-Data (decision D2) is replaced by a documented
 synthetic generator. It produces realistic charging-session and base-load traces stored
-as CSV, which the replay engine ingests exactly as it would a real dataset — same
+as CSV, which the replay engine ingests exactly as it would a real dataset - same
 `Arrival` + base-load interface, so a real dataset could be swapped in later.
 
 The generator is deterministic (seeded) so runs are reproducible.

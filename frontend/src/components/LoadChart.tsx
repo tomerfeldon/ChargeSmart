@@ -1,5 +1,5 @@
 // The live power profile: stacked base + charging load over time, with the building
-// limit drawn as a red ceiling (Book §5.4 — managed load held below the limit).
+// limit drawn as a red ceiling (Book §5.4 - managed load held below the limit).
 
 import {
   Area,

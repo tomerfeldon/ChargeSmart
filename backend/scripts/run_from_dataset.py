@@ -7,7 +7,7 @@ Run from backend/:
 This is the end-to-end trace-driven validation (Book §2.3, §5.3, §5.4): it reads the
 dataset from CSV, ingests it through the repository, runs the 5-minute cycle over the
 whole night, and prints the Table 15 statistics plus the managed-vs-uncontrolled peak.
-Nothing is hand-built in code — the scenario comes entirely from the files on disk.
+Nothing is hand-built in code - the scenario comes entirely from the files on disk.
 """
 
 from __future__ import annotations

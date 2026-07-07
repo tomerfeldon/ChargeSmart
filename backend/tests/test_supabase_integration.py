@@ -1,7 +1,7 @@
 """Integration tests for SupabaseRepository against a live database (M2 live wiring).
 
 These run ONLY when DATABASE_URL is configured (in backend/.env or the environment) AND
-the database has been seeded via scripts/seed_supabase.py. Without it, they skip — so the
+the database has been seeded via scripts/seed_supabase.py. Without it, they skip - so the
 default test run stays at 69 fast, hermetic unit tests.
 
 The test creates a throwaway vehicle/session and leaves it canceled, so it doesn't

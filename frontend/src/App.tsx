@@ -7,7 +7,7 @@ import { ManagerView } from "./views/ManagerView";
 import { DiagnosticsView } from "./views/DiagnosticsView";
 import type { Role } from "./types";
 
-// Each role lands on its own view (Book §3.1 — role-specific views).
+// Each role lands on its own view (Book §3.1 - role-specific views).
 const HOME: Record<Role, string> = {
   resident: "/resident",
   manager: "/manager",
