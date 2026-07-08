@@ -96,14 +96,23 @@ def update_session(repo: Repository, user, session_id: int, payload: SessionUpda
 
 
 def get_schedule(repo: Repository, building_id: int) -> ScheduleResponse:
+    """Read the current schedule - fast and READ-ONLY.
+
+    Allocations are (re)computed on events (session create/update via decision D3, and
+    limit changes), so a GET is just a snapshot of the stored state. Recomputing (and
+    writing) on every poll would hammer the single DB connection and stall the server.
+    """
     now = _now()
-    snapshot = simulation.recompute(repo, building_id, now)
+    building = repo.get_building(building_id)
+    base_load = repo.get_base_load_at(building_id, now)
+    budget = max(0.0, building.max_building_power_kw - base_load)
     sessions = repo.list_active_sessions(building_id)
+    total_assigned = sum(s.assigned_power_kw for s in sessions)
     return ScheduleResponse(
-        building_limit_kw=repo.get_building(building_id).max_building_power_kw,
-        base_load_kw=snapshot.base_load_kw,
-        available_budget_kw=snapshot.available_budget_kw,
-        total_assigned_kw=snapshot.total_assigned_kw,
+        building_limit_kw=building.max_building_power_kw,
+        base_load_kw=base_load,
+        available_budget_kw=budget,
+        total_assigned_kw=total_assigned,
         as_of=now,
         sessions=[_to_session_read(repo, s, now) for s in sessions],
     )
